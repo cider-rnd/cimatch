@@ -1,4 +1,4 @@
-module github.com/makecider-rnd/cimatch/v1
+module github.com/cider-rnd/cimatch
 
 go 1.16
 
