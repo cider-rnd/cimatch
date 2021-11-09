@@ -1,0 +1,87 @@
+rules:
+  checkov:
+    name: "Checkov usage vulnerable to Malicious Code Analysis"
+    description: "A Malicious Code Analysis attack abuses SAST misconfigurations to execute malicious code on the machine running the SAST scan. The current method of checkov invocation does not refer to a configuration file, allowing anyone with permissions on the repo to inject a malicious configuration file and execute commands on the host running checkov"
+    url: https://medium.com/cider-sec/malicious-code-analysis-13d5c1b37ffe
+    tags:
+      - MCA_VULNERABILITY
+      - PIPELINE_VULNERABILITY
+    severity: critical
+    files:
+      - "(?i)jenkinsfile"
+      - "\\.groovy$"
+    match:
+      - sh\s+["']([^'"]*)['"]
+    includes:
+      - \bcheckov\b
+    excludes:
+      - --config-file
+
+  rubocop:
+    name: "Rubocop usage vulnerable to Malicious Code Analysis"
+    description: "A Malicious Code Analysis attack abuses SAST misconfigurations to execute malicious code on the machine running the SAST scan. The current method of rubocop invocation does not refer to a configuration file, allowing anyone with permissions on the repo to inject a malicious configuration file and execute commands on the host running rubocop"
+    url: https://medium.com/cider-sec/malicious-code-analysis-13d5c1b37ffe
+    tags:
+      - MCA_VULNERABILITY
+      - PIPELINE_VULNERABILITY
+    severity: critical
+    files:
+      - "(?i)jenkinsfile"
+      - "\\.groovy$"
+    match:
+      - sh\s+["']([^'"]*)['"]
+    includes:
+      - \brubocop\b
+    excludes:
+      - \s-c[=\s]
+      - \s--config[=\s]
+
+  npm-jenkins:
+    name: "Packages imported with NPM vulnerable to dependency chain attacks"
+    description: "When installing external dependencies it is important to verify that dependencies were tested and verified. 'NPM Install' does not verify against the lock file and will download new untested versions when running. To prevent usage of unknown dependency attacks you should use 'npm ci' when installing dependencies"
+    url: "https://docs.npmjs.com/cli/v7/commands/npm-ci"
+    tags:
+      - PIPELINE_VULNERABILITY
+    files:
+      - "(?i)jenkinsfile"
+      - "\\.groovy$"
+    severity: high
+    match:
+      - sh\s+["']([^'"]*)['"]
+    includes:
+      - npm.*\b(install|i)\b
+    excludes:
+      - \bci\b
+      - \bcit\b
+
+  npm-docker:
+    name: "Packages imported with NPM vulnerable to dependency chain attacks"
+    description: "When installing external dependencies it is important to verify that dependencies were tested and verified. 'NPM Install' does not verify against the lock file and will download new untested versions when running. To prevent usage of unknown dependency attacks you should use 'npm ci' when installing dependencies"
+    url: "https://docs.npmjs.com/cli/v7/commands/npm-ci"
+    tags:
+      - PIPELINE_VULNERABILITY
+    files:
+      - "(?i)dockerfile"
+    severity: high
+    match:
+      - (\bnpm\b.*)
+    includes:
+      - \b(install|i)\b
+    excludes:
+      - \bci\b
+
+  yaml:
+    name: "Packages imported with NPM vulnerable to dependency chain attacks"
+    description: "When installing external dependencies it is important to verify that dependencies were tested and verified. 'NPM Install' does not verify against the lock file and will download new untested versions when running. To prevent usage of unknown dependency attacks you should use 'npm ci' when installing dependencies"
+    url: "https://docs.npmjs.com/cli/v7/commands/npm-ci"
+    tags:
+      - PIPELINE_VULNERABILITY
+    files:
+      - (?i)\.ya?ml$
+    severity: high
+    match:
+      - -\s+(\bnpm\b.*)
+    includes:
+      - \b(install|i)\b
+    excludes:
+      - \bci\b
